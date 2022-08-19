@@ -1,7 +1,6 @@
 Feature: Тестирование флоу открытой части
 
   Scenario: Получаем список закупок и логируем их цены и количество
-      Given Page opened "https://www.rts-tender.ru/"
       When Click "Поставщикам" in "223-ФЗ" column in footer
       And Click "Расширенный поиск" on suppliers page
       And Click "Настройка поиска" on advanced search page

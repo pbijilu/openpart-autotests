@@ -1,12 +1,13 @@
 package steps;
 
+import com.codeborne.selenide.ex.ElementIsNotClickableException;
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import models.Trade;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.ElementClickInterceptedException;
 import pages.AdvancedSearchPage;
 import pages.MainPage;
 import pages.SearchSettingsModal;
@@ -16,167 +17,105 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static com.codeborne.selenide.Selenide.open;
 
 public class Test1Steps {
     private static final Logger log = LogManager.getLogger();
-    private final MainPage basicPage;
+    private final MainPage mainPage;
     private final SuppliersPage suppliersPage;
     private final AdvancedSearchPage advancedSearchPage;
     private final SearchSettingsModal searchSettingsModal;
 
     public Test1Steps() {
-        basicPage = new MainPage();
+        mainPage = new MainPage();
         suppliersPage = new SuppliersPage();
         advancedSearchPage = new AdvancedSearchPage();
         searchSettingsModal = new SearchSettingsModal();
     }
 
-    @Given("Page opened {string}")
-    public void openUrl(String url) {
-        try {
-            open(url);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        log.info(MessageFormat.format("Открыта страница {0}", url));
-    }
-
     @When("Click {string} in {string} column in footer")
-    public void clickLinkInTheColumnInFooter(String linkName, String columnName) {
-        try {
-            basicPage.clickLink(linkName, columnName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public void clickLinkInTheColumnInFooter(String linkName, String columnName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        mainPage.clickLinkByLinkAndColumnNames(linkName, columnName);
 
         log.info(MessageFormat.format("Переходим на \"{0}\"", linkName));
     }
 
     @And("Click {string} on suppliers page")
-    public void clickLinkOnSuppliersPage(String linkName) {
-        try {
-            suppliersPage.checkIfLoaded();
+    public void clickLinkOnSuppliersPage(String linkName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        suppliersPage.checkIfLoaded();
 
-            suppliersPage.clickLink(linkName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        suppliersPage.clickLinkByName(linkName);
 
         log.info(MessageFormat.format("Переходим на \"{0}\"", linkName));
     }
 
     @And("Click {string} on advanced search page")
-    public void clickLinkOnAdvancedSearchPage(String linkName) {
-        try {
-            advancedSearchPage.checkIfLoaded();
+    public void clickLinkOnAdvancedSearchPage(String linkName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        advancedSearchPage.checkIfLoaded();
 
-            advancedSearchPage.clickLink(linkName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        advancedSearchPage.clickLinkByName(linkName);
 
         log.info(MessageFormat.format("Переходим на \"{0}\"", linkName));
     }
 
     @And("Select {string} checkbox on search settings modal window")
-    public void selectCheckboxOnSearchSettingModalWindow(String checkboxName) {
-        try {
-            searchSettingsModal.checkIfLoaded();
+    public void selectCheckboxOnSearchSettingModalWindow(String checkboxName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        searchSettingsModal.checkIfLoaded();
 
-            searchSettingsModal.selectCheckbox(checkboxName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        searchSettingsModal.selectCheckboxByName(checkboxName);
 
         log.info(MessageFormat.format("Отмечаем чекбокс \"{0}\"", checkboxName));
     }
 
     @And("Open {string} category on search settings modal window")
-    public void openCategoryOnSearchSettingsModalWindow(String filterName) {
-        try {
-            searchSettingsModal.openFilter(filterName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public void openCategoryOnSearchSettingsModalWindow(String filterName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        searchSettingsModal.openFilterByName(filterName);
 
         log.info(MessageFormat.format("Открываем фильтр \"{0}\"", filterName));
     }
 
     @And("Enter today's date in {string} from\\/to fields")
-    public void enterTodaySDateInFromToFields(String fieldName) {
-        try {
-            var dateFrom = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            var dateTo = dateFrom;
-            //LocalDate.now().plusDays(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    public void enterTodaySDateInFromToFields(String fieldName) throws NoSuchElementException {
+        var dateFrom = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        var dateTo = LocalDate.now().plusDays(5).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-            searchSettingsModal.enterFromDate(fieldName, dateFrom);
-            searchSettingsModal.enterToDate(fieldName, dateTo);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        searchSettingsModal.enterFromDate(fieldName, dateFrom);
+        searchSettingsModal.enterToDate(fieldName, dateTo);
 
         log.info(MessageFormat.format("Вводим даты от/до в поле \"{0}\"", fieldName));
     }
 
     @And("Enter {string} in delivery region input field")
-    public void enterInDeliveryRegionInputField(String regionName) {
-        try {
-            searchSettingsModal.enterDeliveryRegion(regionName);
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public void enterInDeliveryRegionInputField(String regionName) throws NoSuchElementException {
+        searchSettingsModal.enterDeliveryRegion(regionName);
 
         log.info(MessageFormat.format("Вводим регион \"{0}\"", regionName));
     }
 
     @And("Click find button")
-    public void clickFindButton() {
-        try {
-            searchSettingsModal.clickFind();
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public void clickFindButton() throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        searchSettingsModal.clickFind();
 
         log.info("Нажимаем кнопку поиска");
     }
 
     @And("Load more trades until all of them are loaded")
-    public void loadMoreTradesUntilAllOfThemAreLoaded() {
-        try {
-            advancedSearchPage.checkIfLoaded();
-
-            advancedSearchPage.loadMore();
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+    public void loadMoreTradesUntilAllOfThemAreLoaded() throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
+        advancedSearchPage.checkIfLoaded();
+        advancedSearchPage.loadMore();
 
         log.info("Загружаем все полученные закупки");
     }
 
     @Then("Collect and log data on prices and quantity")
-    public void collectAndLogDataOnPricesAndQuantity() {
+    public void collectAndLogDataOnPricesAndQuantity() throws NoSuchElementException {
         List<Trade> tradeList = null;
-        try {
-            advancedSearchPage.checkIfLoaded();
 
-            tradeList = advancedSearchPage.getTrades();
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        advancedSearchPage.checkIfLoaded();
+
+        tradeList = advancedSearchPage.getTrades();
 
         double totalSum = 0;
 

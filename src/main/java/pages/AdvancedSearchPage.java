@@ -1,17 +1,19 @@
 package pages;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.ex.ElementIsNotClickableException;
 import models.Trade;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.NoSuchElementException;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
-public class AdvancedSearchPage{
+public class AdvancedSearchPage extends BasePage {
     private final By linkToSearchSettings = By.xpath("//span[@class='main-search__settings-btn']");
     private final By buttonLoadMore = By.id("load-more");
     private final By trades = By.className("card-item");
@@ -19,16 +21,22 @@ public class AdvancedSearchPage{
     private final By modalConsultation = By.xpath("//div[@class='modal-wrap consultation_modal']");
     private final By buttonCloseConsultation = By.xpath("//button[@class='modal-close consultation_modal']");
 
-    public void clickLink(String linkName) {
+    @Override
+    public void clickLinkByName(String linkName) throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
         if (linkName.equals("Настройка поиска")) {
             $(linkToSearchSettings).click();
         }
     }
 
-    public void loadMore() throws InterruptedException {
+    public void loadMore() throws NoSuchElementException, ElementClickInterceptedException, ElementIsNotClickableException {
         while ($(buttonLoadMore).isDisplayed()) {
             //anti-captcha wait
-            Thread.sleep(2000);
+            try {
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e) {
+
+            }
             if ($(modalConsultation).isDisplayed()) {
                 $(buttonCloseConsultation).click();
             }
@@ -37,12 +45,13 @@ public class AdvancedSearchPage{
         }
     }
 
-    public void checkIfLoaded() {
-        $(linkToSearchSettings).shouldBe(visible);
+    @Override
+    public void checkIfLoaded() throws NoSuchElementException {
+        $(linkToSearchSettings).shouldBe(visible).exists();
         $(loader).shouldNotBe(visible);
     }
 
-    public List<Trade> getTrades() {
+    public List<Trade> getTrades() throws NumberFormatException{
         List<Trade> tradesList = new ArrayList<>();
         ElementsCollection trades = $$(this.trades);
         for (var trade : trades) {
